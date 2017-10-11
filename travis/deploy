@@ -1,11 +1,13 @@
 #!/bin/bash -xe
 
+SLUG="$1"
+
 chmod 600 deploy-key
 eval `ssh-agent -s`
 ssh-add deploy-key
 git config user.name "Automatic Publish"
 git config user.email "${GIT_EMAIL}"
-git remote add gh-token "${GH_REF}";
+git remote add gh-token "git@github.com:$SLUG.git";
 git fetch gh-token && git fetch gh-token gh-pages:gh-pages
 echo "Pushing to github"
 PYTHONPATH=src/ mkdocs gh-deploy -v --clean --remote-name gh-token
