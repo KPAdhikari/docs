@@ -10,9 +10,10 @@ before_script:
 - pip install linkchecker
 - pip install requests==2.9.2 # https://github.com/wummel/linkchecker/issues/649
 script:
-- if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]; then openssl aes-256-cbc -K $encrypted_75e9e0f098a4_key -iv $encrypted_75e9e0f098a4_iv -in deploy-key.enc -out deploy-key -d && ./travis/deploy "opensciencegrid/docs"; fi
-- if [[ "${TRAVIS_BRANCH}" == migrate.* ]] || [[ "${TRAVIS_BRANCH}" == itb.* ]]; then openssl aes-256-cbc -K $encrypted_6911e3551a88_key -iv $encrypted_6911e3551a88_iv -in deploy-itb.enc -out deploy-key -d && ./travis/verify && ./travis/deploy "opensciencegrid/docs-itb"; fi
+- if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" == "master" ]; then KEY="$encrypted_75e9e0f098a4_key"; IV="$encrypted_75e9e0f098a4_iv"; IN=deploy-key.enc; REPO="opensciencegrid/docs"; fi
+- if [ "${TRAVIS_PULL_REQUEST}" == "false" ] && [ "${TRAVIS_BRANCH}" != "master" ]; then KEY="$encrypted_6911e3551a88_key"; IV="$encrypted_6911e3551a88_iv"; IN=deploy-itb.enc; REPO="opensciencegrid/docs-itb"; fi
 - if [ "${TRAVIS_PULL_REQUEST}" != "false" ]; then ./travis/verify; fi
+- if [ "${TRAVIS_PULL_REQUEST}" == "false" ]; then openssl aes-256-cbc -K "$KEY" -iv "$IV" -in "$IN" -out deploy-key -d; ./travis/deploy "$REPO"; fi
 
 notifications:
   slack:
